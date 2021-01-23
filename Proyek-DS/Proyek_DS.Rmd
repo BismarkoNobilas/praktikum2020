@@ -1,0 +1,170 @@
+---
+title: "Proyek DS"
+author: "Bismarko - Nadif"
+date: "1/15/2021"
+output: html_document
+runtime: shiny
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE,
+  collapse = TRUE,
+  comment = "#>"
+)
+
+```
+
+
+```{r global}
+library(shiny)
+library(here)
+library(vroom)
+library(dplyr)
+library(ggplot2)
+library(conflicted)
+
+
+main_data <- vroom(here::here("Proyek-DS", "Jumlah_Penyebab_Kematian_Jawa_Barat.csv"))
+data <- main_data[c(3,4,5,6)]
+dasaran <- colnames(data)[c(1, 2)]
+nama_kota_kabupaten <- unique(data[["nama_kota_kabupaten"]])
+kematian <- unique(data[["kematian"]])
+penyebab <- unique(data[["penyebab"]])
+rata2 <- mean(data[["jumlah"]])
+calcu <- rata2/2
+```
+
+option_parameter <- colnames(udara_bandung)[-c(1, 2)]
+
+```{r ui}
+ui <- fluidPage(
+  title = "Jumlah Penyebab Kematian Jawa Barat",
+  headerPanel("Jumlah Kematian Berdasarkan Penyebab di Provinsi Jawa Barat Tahun 2018"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(inputId = "dasar",
+                  label =  "Bedasarkan",
+                  choices = dasaran, 
+                  selected = dasaran[[1]]),
+      conditionalPanel(
+        condition = "input.dasar == 'nama_kota_kabupaten'",
+        selectInput(inputId = "utama1", 
+                    label = "Nama Kota-Kabupaten", 
+                    choices = nama_kota_kabupaten,
+                    # selected = nama_kota_kabupaten[[1]],
+                    multiple = TRUE),
+        selectInput(inputId = "var1", 
+                    label = "Variabel Kematian", 
+                    choices = kematian,
+                    # selected = kematian[[1]],
+                    multiple = TRUE),
+        ),
+      conditionalPanel(
+        condition = "input.dasar == 'kematian'",
+        selectInput(inputId = "utama2", 
+                    label = "Kematian", 
+                    choices = kematian,
+                    # selected = kematian[[1]],
+                    multiple = TRUE),
+        selectInput(inputId = "var2", 
+                    label = "Variabel Nama Kota-Kabupaten", 
+                    choices = nama_kota_kabupaten,
+                    # selected = nama_kota_kabupaten[[1]],
+                    multiple = TRUE),
+        ),
+      actionButton("kmeans", "Means"),
+      textOutput("teks1"),
+      textOutput("text")
+    ),
+    mainPanel(
+      plotOutput(outputId = "bar_plot"),
+      textOutput("teks2"),
+      textOutput("tasim"),
+      textOutput("simpul"),
+      actionButton(inputId = "quit", label = "Quit")
+    )
+  )
+)
+```
+
+
+```{r server}
+server <- function(input, output) {
+
+  observeEvent(input$kmeans, {
+    if (input$dasar == "nama_kota_kabupaten") {
+      hitug <- data %>% 
+        dplyr::filter(nama_kota_kabupaten %in% input$utama1) %>%
+        dplyr::filter(kematian %in% input$var1)
+      mehit <- mean(hitug[["jumlah"]])
+      output$text <- renderText(mehit)
+      output$tasim <- renderText("Bedasarkan rata-rata dari jumlah kematian kota-kabupaten yang dipilih dan dibandingkan dengan rata-rata keseluruhan yang ada di jawa barat pada kota-kabupaten yang dipilih")
+      
+    } else if(input$dasar == "kematian"){
+      hitug <- data %>% 
+        dplyr::filter(kematian %in% input$utama2) %>%
+        dplyr::filter(nama_kota_kabupaten %in% input$var2)
+      mehit <- mean(hitug[["jumlah"]])
+      output$text <- renderText(mehit)
+      output$tasim <- renderText("Bedasarkan rata-rata dari jumlah jenis kematian yang dipilih dan dibandingkan dengan rata-rata keseluruhan yang ada di jawa barat pada jenis kematian yang dipilih")
+    }
+    if (mehit < calcu) {
+      output$simpul <- renderText(" Relatif Lebih Kecil dibanding rata-rata keseluruhan di jawa barat")
+    }else if (mehit < rata2) {
+      output$simpul <- renderText(" Sedikit Lebih Kecil dibanding rata-rata keseluruhan di jawa barat")
+    }else if (mehit == rata2) {
+      output$simpul <- renderText(" Sama Dengan rata-rata keseluruhan di jawa barat")
+    }else if (mehit > 2*rata2) {
+      output$simpul <- renderText(" Jauh Lebih Besar dibanding rata-rata keseluruhan di jawa barat")
+    }else if (mehit > rata2 && mehit < rata2+calcu) {
+      output$simpul <- renderText(" Sedikit Lebih Besar dibanding rata-rata keseluruhan di jawa barat")
+    }else if (mehit > rata2 && mehit < 2*rata2) {
+      output$simpul <- renderText(" Relatif Lebih Besar dibanding rata-rata keseluruhan di jawa barat")
+    }else if (mehit == 0){
+      output$simpul <- renderText(" Tidak Ada kematian dibanding rata-rata keseluruhan di jawa barat")
+    }else{
+      output$simpul <- renderText(" HASIL ERROR ")
+    }
+    output$teks1 <- renderText("Rata2 : ")
+    output$teks2 <- renderText("KESIMPULAN : ")
+      
+    
+  })
+  
+  bar_plot <- reactive({
+    
+    if (input$dasar == "nama_kota_kabupaten") {
+      data %>% 
+        dplyr::filter(nama_kota_kabupaten %in% input$utama1) %>%
+        dplyr::filter(kematian %in% input$var1) %>%
+        ggplot(aes_string(fill="penyebab", y='kematian', x="jumlah")) +
+        geom_bar(stat="identity")
+      
+    } else if(input$dasar == "kematian"){
+      data %>% 
+        dplyr::filter(kematian %in% input$utama2) %>%
+        dplyr::filter(nama_kota_kabupaten %in% input$var2) %>%
+        ggplot(aes_string(fill="penyebab", y='nama_kota_kabupaten', x="jumlah")) +
+        geom_bar(stat="identity")
+    }
+    
+  })
+  
+  observe({
+    if (input$quit == 1) stopApp()
+  })
+  
+  output$bar_plot <- renderPlot({ 
+    bar_plot()
+  })
+}
+```
+
+
+```{r run-app}
+shinyApp(ui = ui, server = server)
+```
+
+ 

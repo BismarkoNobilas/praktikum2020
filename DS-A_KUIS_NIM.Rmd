@@ -1,0 +1,51 @@
+---
+title: "Kuis_DS-A"
+author: "<Isi Nama>_<Isi NIM>"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##Intro
+
+0. Cuci tangan dengan sabun hingga benar-benar bersih dengan durasi mencuci tangan kurang lebih 20 dtk
+1. Kerjakan Soal-soal yang ada! Jangan lupa author dinamai!
+2. Kuis terdiri dari 2 bagian yaitu bagian pertama dan bagian kedua
+3. Jawab dengan membuat chunk dibawah soal!
+4. Durasi pengerjaan sesuai kesepakatan yaitu 12 jam mulai pukul 12.00 siang hingga 24.00 malam tanggal 13 April 2020
+5. No toleransi pengumpulan telat, 12 jam loh bos telat ngisin-ngisini. Ingat, telat kemungkinan terburuk ga ada nilai kuis!
+6. Misal soal rancu bisa menghubungi asisten terkait
+7. Selamat memutus rantai gabut :) jangan lupa jaga kesehatan
+
+##Bagian Pertama
+
+1. Load library apa saja yang kira-kira digunakan! Lalu gunakan data 'us_contagious_diseases'! **point 1**
+2. Tampilkan semua nama kolom pada data frame yang ada! **point 5**
+3. Tampilkan tipe data pada kolom penyakit! **point 5**
+4. Tampilkan 10 data penyakit polio teratas diurutkan berdasarkan populasi dan terjadi pada antara tahun 1965 dan 1955! **point 11**
+5. Klasifikasikan data tersebut berdasarkan jumlah kasusnya dengan kondisi
+
+-jumlah kasus kurang dari 1000 dikategorikan sebagai "Biasa"
+
+-jumlah kasus lebih dari 2000 dikategorikan sebagai "Azab
+
+-jumlah kasus antara kedua kondisi diatas dikategorikan sebagai "Cobaan" 
+
+NB : jika dirasa jumlah data hasilnya terlalu banyak boleh menggunakan fungsi top_n() atau head()**point 10**
+
+6. Tambahkan variabel baru berisi data 'us_contagious_diseases' dengan tambahan kolom baru dengan nama "category" yang isinya merupakan implementasi nomor 5 dan kolom "rate" yang isinya merupakan hasil bagi jumlah kasus dengan populasi dikalikan 100000! **point 10**
+7. Tampilkan kesimpulan pada data nomor 6 dikelompokkan berdasarkan negara bagian yang isinya  nama negara bagian dan rata-rata rate per negara bagian! **point 8**
+8. Lakukan visualisasi pada hasil nomor 7!(Bebas menggunakan plot, boxplot, hist, ggplot2 dsb) **point 5**
+
+##Bagian Kedua
+
+1. Load library tambahan untuk import file! **point 2**
+2. Tampilkan informasi rinci tentang struktur dataset yang digunakan! **point 5**
+3. Tampilkan nama Negara dengan jumlah Penderita Covid-19 yang Terkonfirmasi dari paling banyak ke paling sedikit! **point 8**
+4. Buat kolom baru bernama RateDeaths yang berisi rasio korban Covid-19 yang meninggal dengan yang terkonfirmasi! **point 11**
+5. Negara mana yang memiliki rasio kematian Covid-19 tertinggi dan terendah? Tampilkan nama negaranya. **point 11**
+6. Tampilkan grafik plot antara penderita yang sembuh degan penderita yang terkonfirmasi Covid-19! **point 8**

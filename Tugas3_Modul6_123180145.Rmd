@@ -1,0 +1,40 @@
+---
+title: "Tugas3_Modul6_123180145"
+author: "Bismarko Nobilas"
+date: "12/11/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Modul6}
+#1
+library(dplyr)
+library(dslabs)
+data(murders)
+murders <- mutate(murders, rate = total / population)
+murders
+
+#2
+murders <- mutate(murders, ranks = rank(-murders$rate))
+murders
+
+#3
+select(murders, state, abb) %>% head(n=40)
+
+#4
+filter(murders, ranks >= 1 & ranks <= 5 )
+
+#5
+filter(murders, rate < 1, region=="Northeast" | region == "West") %>% select(state, rate, ranks)
+
+#Operator Pipe
+data(murders)
+my_states <- murders %>%
+  mutate(rate = total / population, ranks = rank(-(total / population)))  %>%
+  filter(rate < 1, region=="Northeast" | region == "EastWest")  %>%
+  select(state, rate, ranks)
+my_states
+```

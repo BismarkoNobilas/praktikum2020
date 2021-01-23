@@ -1,0 +1,182 @@
+---
+title: "RESPONSI_DS-(A)"
+author: "<Bismarko Nobilas>_<Isi NIM>"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro
+
+0. Cuci tangan dengan sabun hingga benar-benar bersih dengan durasi mencuci tangan kurang lebih 20 dtk
+1. Kerjakan Soal-soal yang ada! Jangan lupa author dinamai!
+2. Responsi terdiri dari 2 bagian yaitu bagian pertama dan bagian kedua
+3. Jawab dengan membuat chunk dibawah soal!
+4. Durasi pengerjaan sesuai kesepakatan yaitu 2 jam mulai pukul 20.00 pagi hingga 22.00 malam tanggal 22 Januari 2021
+5. No toleransi pengumpulan telat. Telat tiap 3 menit akan ada pengurangan nilai 5 point dengan maksimal pengurangan 25 point. Telat lebih dari 15 menit atau melebihi pukul 22.15 dianggap **GUGUR**.
+6. Misal soal rancu bisa menghubungi asisten terkait.
+7. Pengumpulan hanya dalam bentuk **WORD Document atau PDF**. Jika pengumpulan dalam bentuk **Rmd** akan dianggap tidak mengumpulkan jaawaban. Pastikan jawaban dapat dijalankan dengan baik. 
+8. Tenang, untuk responsi kali ini nilai akan diobral, nilai maksimal adalah 350 dari 100. Jadi, kemungkinan dapat nilai bagus besar kok.
+9. Isi juga review/feedback/kritik/saran/masukan yang sudah disediakan di bagian paling bawah soal. ***WAJIB***
+10. Selamat memutus rantai gabut :) jangan lupa jaga kesehatan
+
+## Persiapan
+Load library apa saja yang kira-kira digunakan! Lalu load dataset 'googleplay.csv' dan 'googleplay_user_review.csv'!
+
+```{r global}
+library(here)
+library(vroom)
+library(dplyr)
+
+googleplaystore <- vroom(here::here("Responsi", "googleplaystore.csv"))
+user_reviews <- vroom(here::here("Responsi", "googleplaystore_user_reviews.csv"))
+```
+
+## Bagian Pertama
+
+1. Tampilkan TOP 10 Aplikasi berdasarkan peringkat PENILAIAN/RATING yang diberikan user! **point 10**
+```{r }
+googleplaystore %>% arrange(desc(Rating)) %>% head(n=10)
+```
+
+2. Tampilkan rata-rata RATING yang dihitung menggunakan fungsi buatan untuk setiap kategori aplikasi! **point 15**
+```{r }
+Rata2 <- aggregate(googleplaystore[, 3], list(googleplaystore$Category), mean)
+Rata2
+```
+
+3. Berdasarkan soal nomor 2, buat plot untuk memvisualisasikan hasilnya! (Bentuk plot bebas) **point 15**
+```{r }
+Rata2 %>% ggplot(aes(Group.1, Rating))
+```
+
+Info untuk 2 soal 4-5:Terdapat dua dataset yang digunakan. Satu dataset untuk info aplikasi dan satu dataset lagi untuk kumpulan reviewnya.
+
+
+4. Dari kedua dataset tersebut, buat satu variable data baru yang isinya NAMA APLIKASI, RATING, dan JUMLAH REVIEW Positif dan/atau Negatif dan/atau Neutral (boleh semua, boleh pilih salah satu)lalu tampilkan isi data tabel tersebut! **point 20**
+```{r }
+new_data <- inner_join(googleplaystore, user_reviews, by = "App") %>%
+  select(App, Rating, )
+```
+
+5. Dalam dunia data scientist, sebelum melakukan pemodelan ada baiknya data dilakukan preprocessing terlebih dahulu. Dengan dataset review yang sudah dimasukkan oleh user, lakukan sebuah preprocessing data SEDERHANA yang menurut kalian dapat dilakukan untuk dataset tersebut agar dataset bisa siap untuk dimodelkan (simpan hasil preprocessing dalam variabel baru)! 
+
+Clue : Clean, Tidy, no redundacy, no dupe, no null , lan liya-liyane **point 40**
+```{r }
+```
+
+
+## Bagian Kedua
+Referensi mengerjakan: 
+https://www.tidytextmining.com/
+
+1. Import library tidymodels, vroom, here, tidytext dan dua dataset ke dalam objek R **nilai 10**
+```{r}
+library(tidymodels)
+library(vroom)
+library(here)
+library(tidytext)
+
+user_reviews <- vroom(here("Responsi", "googleplaystore_user_reviews.csv"))
+googleplaystore <- vroom(here("Responsi", "googleplaystore.csv"))
+```
+
+2. Joining dua dataset menggunakan inner join **nilai 10**
+```{r}
+joining_data <- googleplaystore %>%
+  inner_join(user_reviews, by = "App")
+```
+
+3. Tahap pre-processing data. Ketika ingin melakukan analisis sentimen beberapa hal harus dilakukan sebelum data dapat digunakan. Bersihkan dan rapikan data dengan membuang data yang "nan" di bagian Translated_review. Setelah itu, data juga harus dibersihkan dari kata-kata yang mengandung stop_word (seperti: a, a's, after, dll). Data yang siap diolah juga harus ditokenisasi yaitu proses membagi teks dari paragraf atau kalimat ke kata. Hasil dari tokenisasi adalah tiap baris data hanya mengandung 1 kata. **nilai 15**
+```{r}
+tidy_user_reviews <- joining_data %>%
+  filter(Translated_Review != "nan") %>%
+  unnest_tokens(word, Translated_Review) %>%
+  anti_join(stop_words) 
+```
+
+4. Sentimen analisis dapat menggunakan beberapa jenis metode berdasarkan sentiment lexicon. Ada beberapa sentiment lexicon seperti bing, afinn, dan nrc. Gunakan sentiment lexicon nrc untuk mendapatkan jumlah kata untuk 10 kategori nrc (positive, negative, fear, surprise, dll). ***nilai 15***
+```{r}
+nrc_n <- ___ %>% 
+  inner_join(get_sentiments("nrc")) %>%
+  count(___, sort = TRUE)
+nrc_n
+```
+
+5. Kita dapat mengetahui banyaknya kata tiap kategori nrc untuk tiap aplikasi. Cobalah untuk mencari banyak kata tiap kategori nrc yang dikelompokkan berdasarkan nama aplikasi. **nilai 15**
+```{r}
+user_reviews_nrc <- ___ %>% 
+  inner_join(___) %>%
+  group_by(___) %>%
+  count(sentiment, sort = TRUE) %>%
+  spread(___, n, fill = 0) %>%
+  ungroup()
+user_reviews_nrc
+```
+
+6. Setelah mendapatkan jumlah kata tiap kategori tiap aplikasi, kita dapat mngetahui aplikasi mana yang memiliki kata dengan kategori 'surprise' terbanyak untuk tiap aplikasi. Kita akan memvisualisasikan dengan grafik batang 10 aplikasi dengan jumlah kata kategori 'surprise' terbanyak. ***nilai 20***
+```{r}
+user_reviews_nrc %>%
+  arrange(desc(___)) %>%
+  top_n(___) %>%
+  ggplot(aes(reorder(App, ___), ___, fill = App)) +
+  geom___(show.legend = FALSE) +
+  coord_flip() +
+  labs(
+    x = "App"
+  )
+
+```
+
+7. Selain menggunakan sentiment lexicon 'nrc', sentimen analisis juga dapat menggunakan sentiment lexicon 'bing'. Bing hanya akan memberikan label untuk tiap kata positif atau negatif saja. Carilah kata positif yang paling umum dan kata negatif yang paling sering digunakan saat memberikan review pada aplikasi! ***nilai 15***
+```{r}
+bing_word_counts <- tidy_user_reviews %>%
+  inner_join(___) %>%
+  count(___, ___, sort = TRUE)
+bing_word_counts
+```
+
+8. Pembacaan data akan lebih mudah jika ditampilkan dalam bentuk grafik. Tampilkan grafik 10 kata positif dan negatif terbanyak! ***nilai 20***
+```{r}
+bing_word_counts %>%
+  ___(___) %>%
+  ___(10) %>%
+  ungroup() %>%
+  mutate(word = reorder(___, n)) %>%
+  ___(aes(___, n, fill = sentiment)) +
+  geom___(show.legend = FALSE) +
+  facet_wrap(~sentiment, scales = "free_y") +
+  labs(y = "Contribution to sentiment",
+       x = NULL) +
+  ___flip()
+```
+
+9. Penganalisis data membutuhkan jumlah kata tiap kategori yang belum digabung dengan sentiment lexicon untuk menghitung rasio positif, ratio negatif  dan net sentiment. Bantulah penganalisis tersebut untuk mendapatkan jumlah kata tiap kategori dari data yang sudah dirapikan! ***nilai 15***
+```{r}
+```
+9. Selanjutnya penganalisis data ingin mendapatkan jumlah kata positif, jumlah kata negatif, rasio positif (jumlah kata positif/jumlah keseluruhan kata), rasio negatif (jumlah kata negatif/jumlah keseluruhan kata), dan net sentiment  (jumlah kata positif - jumlah kata negatif) dengan menggunakan sentiment lexicon bing untuk tiap kategorinya. Tabel yang diinginkan oleh analisis adalah seperti berikut ***nilai 40***
+___________________________________________________________________________________________
+Category | poisitive | negative | words | positive_ratio | negative_ratio | net_sentiment |
+___________________________________________________________________________________________
+```{r}
+```
+10. Jangan lupa untuk menampilkan dalam bentuk grafik antara net_sentiment dengan kategori! ***nilai 25***
+```{r}
+```
+
+11. Penganalisis data ternyata juga ingin membandingkan antara positive_ratio tiap kategori aplikasi yang menggunakan sentiment lexicon bing dengan positive_ratio yang dihitung dari kolom Sentiment yang sudah tersedia dari awal. Apakah hasilnya sama atau ada perbedaan? Tampilkan juga grafik positive_ratio keduanya. ***nilai 50***
+```{r}
+```
+
+Kritik/saran/masukan/feedback/review/uneg-uneg:
+
+
+
+
+
+================================================ SELESAI ================================================

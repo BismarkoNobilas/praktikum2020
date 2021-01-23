@@ -1,0 +1,54 @@
+---
+title: "Tugas1_123180145"
+author: "Bismarko Nobilas"
+date: "11/8/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r tugas}
+library(dslabs)
+data(murders)
+
+#1 
+pop <- murders$population
+sort(pop)[1]
+
+#2
+pop[order(pop)[1]]
+
+#3
+pop[which.min(pop)]
+
+#4
+murders$state[which.min(murders$population)]
+
+#5
+ranks <- rank(murders$population)
+my_df <- data.frame(state = murders$state, population = murders$population, ranks = ranks)
+my_df
+
+#6
+ranks <- rank(murders$population)
+my_df <- data.frame(state = murders$state[order(ranks)], population = murders$population[order(ranks)], ranks = ranks[order(ranks)])
+my_df
+
+#7
+population_in_millions <- murders$population/10^6 
+total_gun_murders <- murders$total 
+plot(population_in_millions, total_gun_murders, log = "xy")
+
+#8
+hist(murders$population)
+
+#9
+boxplot(population~region, data = murders)
+```
+
+
+```{r plot, echo=FALSE}
+```

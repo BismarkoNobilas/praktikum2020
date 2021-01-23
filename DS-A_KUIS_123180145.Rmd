@@ -1,0 +1,78 @@
+---
+title: "DS-A_KUIS_123180145"
+author: "Bismarko Nobilas"
+date: "12/6/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r BagianPertama}
+#1
+library(dslabs)
+library(tidyverse)
+data(us_contagious_diseases)
+
+#2
+names(us_contagious_diseases)
+
+#3
+class(us_contagious_diseases$disease)
+
+#4 
+us_contagious_diseases %>% 
+  filter(year <= 1965 & year >= 1955 & disease == "Polio" ) %>% 
+  arrange(population) %>%
+  head(n=10)
+
+#5
+NewData <- us_contagious_diseases %>% 
+  mutate(Category = case_when(count < 1000 ~ "Biasa", 
+                              count >=1000 & count < 2000 ~ "Cobaan", 
+                              count > 2000 ~ "Azab", TRUE ~ "Other"))
+head(NewData, n=120)
+
+#6
+NewData <- NewData %>% 
+  mutate(Rate = count / population * 100000)
+head(NewData, n=120)
+
+#7
+NewData <- NewData %>% group_by(state) %>% summarise(Rate = mean(Rate, na.rm = TRUE))
+NewData
+
+#8
+boxplot(Rate~state, data = NewData)
+```
+
+```{r BagianKedua}
+#1
+library(here)
+library(vroom)
+library(tidyverse)
+
+#2
+CovidData <- vroom(here("data-raw", "Covid19_Asean.csv"))
+str(CovidData)
+
+#3
+CovidData %>% select(Country, Confirmed) %>% arrange(desc(Confirmed))
+
+#4
+NewCovidData <- CovidData %>% mutate(RateDeaths = Deaths / Confirmed)
+NewCovidData
+
+#5
+NewCovidData %>%
+  select(Country, RateDeaths) %>%
+  filter(RateDeaths == max(RateDeaths))
+NewCovidData %>%
+  select(Country, RateDeaths) %>%
+  filter(RateDeaths == min(RateDeaths))
+
+#6 antara penderita yang sembuh degan penderita yang terkonfirmasi Covid-19
+plot(CovidData$Recovered, CovidData$Confirmed)
+```

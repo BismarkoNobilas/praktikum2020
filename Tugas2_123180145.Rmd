@@ -1,0 +1,48 @@
+---
+title: "Tugas2_123180145"
+author: "Bismarko Nobilas"
+date: "11/13/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Modul5}
+library(dslabs)
+data(murders)
+
+#1
+new_names <- as.character(abbreviate(murders$state, minlength = 8))
+new_names
+
+#2
+sum_n <- function(x)
+{
+  sum(c(1:x))
+}
+sum_n(5000)           
+
+#3
+compute_s_n <- function(x)
+{
+  sum((1:x)^2)
+}
+compute_s_n(10)
+
+#4
+s_n <- vector("numeric", 25)
+m <- 25
+for(n in 1:m)
+{
+  s_n[n] <- compute_s_n(n)
+} 
+s_n
+
+#5
+s_n <- sapply(1:m, compute_s_n)
+s_n
+
+```
+
